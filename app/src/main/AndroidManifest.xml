@@ -15,7 +15,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAZ70LooGwcvIFCStySoJD6LjqrzJV5hII" />
+            android:value="AIzaSyA8HJ1VfhngOqgzl3x5fj2HXG1kEy-a7wc" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
