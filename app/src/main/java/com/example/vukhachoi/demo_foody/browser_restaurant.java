@@ -72,7 +72,7 @@ public class browser_restaurant extends AppCompatActivity implements OnMapReadyC
     private Marker currentLocationmMarker;
     public static GoogleMap map;
 
-    double latitude = 0, longitude = 0;
+   public static double latitude = 0, longitude = 0;
     AdapterLocation arrayAdapter;
     public static int PROXIMITY_RADIUS = 1000;
     public static LatLng userLocation;
@@ -111,6 +111,11 @@ public class browser_restaurant extends AppCompatActivity implements OnMapReadyC
 AddEvent();
 
     }
+
+
+
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -196,7 +201,7 @@ AddEvent();
 
                 if(isGPSEnabled){
                     if(location==null){
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000,10, (LocationListener) this);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000,10, (LocationListener) this);
                         if(locationManager!=null){
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
@@ -216,9 +221,10 @@ AddEvent();
                 }
 
             }
-
+            latitude=location.getLatitude();
+            longitude=location.getLongitude();
         }catch(Exception ex){
-
+            Log.d("hahaha", ex.getMessage());
         }
         return  location;
     }
@@ -237,39 +243,21 @@ AddEvent();
         } else
             return true;
     }
-
+int a=0;
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sushi1 = new LatLng(10.780407, 106.6916509);
         map = googleMap;
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-
-            map.setMyLocationEnabled(true);
+            Log.d("cuoi", "vooo: ");
             return;
-
         }
-        map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setMyLocationEnabled(true);
+
         getLocation();
-        latitude=getLocation().getLatitude();
-        longitude=getLocation().getLongitude();
-
-
         userLocation=new LatLng(latitude,longitude);
-        map.addMarker(new MarkerOptions()
-                .title("YEN SUSHI PREMIUM ")
-                .snippet("123 Bà Huyện Thanh Quan, Q.3, HCM\n" +
-                        "Điện thoại:  028 39 318 828\n")
-                .position(new LatLng(10.781213, 106.682021))
-                );
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                sushi1, 15));
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Lỗi permission", Toast.LENGTH_LONG).show();
-            return;
-        }
         UpdateRes();
         map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
 
@@ -290,7 +278,9 @@ AddEvent();
 
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-              
+                userLocation=new LatLng(latitude,longitude);
+                a++;
+                if(a<2) UpdateRes();
             }
 
 
@@ -324,33 +314,24 @@ AddEvent();
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 
                 {
-
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
 
                     {
-
                         if (client == null)
 
                         {
-
                             bulidGoogleApiClient();
-
                         }
-
+                        map.getUiSettings().setMyLocationButtonEnabled(true);
                         map.setMyLocationEnabled(true);
-
+                        getLocation();
+                        userLocation=new LatLng(latitude,longitude);
                     }
-
                 } else
-
                 {
-
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
-
                 }
-
         }
-
     }
 
     private String getUrl(double latitude, double longitude, String nearbyPlace)

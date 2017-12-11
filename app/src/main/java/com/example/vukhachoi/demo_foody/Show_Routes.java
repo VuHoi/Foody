@@ -1,5 +1,6 @@
 package com.example.vukhachoi.demo_foody;
 
+import android.*;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -53,12 +54,11 @@ import java.util.List;
 
 
 
-public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
+public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback{
 
     public static GoogleMap map;
-    private LocationManager locationManager;
-    boolean isGPSEnabled =false;
-    boolean isNetworkEnabled =false;
+
+
     double latitude = 0, longitude = 0;
     public static LatLng userLocation;
     Toolbar toolbar1,toolbar2;
@@ -67,14 +67,6 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show__routes);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-
-        {
-
-            checkLocationPermission();
-
-
-        }
         createMap();
         AddControl();
         AddStatus();
@@ -121,21 +113,19 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
     LatLng latLng;
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        try {
+//        try {
             map = googleMap;
+            map.getUiSettings().setMyLocationButtonEnabled(true);
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
-                map.setMyLocationEnabled(true);
-                return;
 
+                return;
             }
-            map.getUiSettings().setMyLocationButtonEnabled(true);
             map.setMyLocationEnabled(true);
 
 
-            latitude = getLocation().getLatitude();
-            longitude = getLocation().getLongitude();
-            userLocation = new LatLng(latitude, longitude);
+
+            userLocation = new LatLng(browser_restaurant.latitude, browser_restaurant.longitude);
 
 
             String name=getIntent().getStringExtra("title");
@@ -149,16 +139,12 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
                     .position(latLng));
 
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "L?i permission", Toast.LENGTH_LONG).show();
-                return;
-            }
+
             try {
                 if (userLocation != null) {
 
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
                     String url = getMapsApiDirectionsUrl(userLocation, latLng);
-//                            String url = getMapsApiDirectionsUrl(new LatLng(10.794708,106.668081), marker.getPosition());
                     new ReadTask().execute(url);
                     //Start downloading json data from Google Directions API
                 }
@@ -176,9 +162,7 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
                             }
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
                             String url = getMapsApiDirectionsUrl(userLocation, latLng);
-//                            String url = getMapsApiDirectionsUrl(new LatLng(10.794708,106.668081), marker.getPosition());
                             new ReadTask().execute(url);
-                            //Start downloading json data from Google Directions API
                         }
                     } catch (Exception e) {
                     }
@@ -199,261 +183,29 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
 
             });
 
-
-        }catch (Exception e){};
+            Toast.makeText(this, name + address+lati+longti, Toast.LENGTH_SHORT).show();
+//        }catch (Exception e){}
         //Add direction
 
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
 
-    }
 
-    private GoogleApiClient client;
 
-    private LocationRequest locationRequest;
 
-    private android.location.Location lastlocation;
 
-    private Marker currentLocationmMarker;
 
-    protected synchronized void bulidGoogleApiClient() {
 
-        client = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
 
-        client.connect();
 
 
-    }
-    int flag=0;
-    @Override
-    public void onLocationChanged(android.location.Location location) {
 
 
-        latitude = location.getLatitude();
 
-        longitude = location.getLongitude();
 
 
 
-        lastlocation = location;
-        userLocation=new LatLng(latitude,longitude);
-        if (currentLocationmMarker != null)
 
-        {
-
-            currentLocationmMarker.remove();
-
-
-        }
-
-
-
-        if(flag<4) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
-            flag++;
-        }
-
-
-        if (client != null)
-
-        {
-
-            LocationServices.FusedLocationApi.removeLocationUpdates(client, (com.google.android.gms.location.LocationListener) this);
-
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(i);
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-
-        locationRequest = new LocationRequest();
-
-        locationRequest.setInterval(100);
-
-        locationRequest.setFastestInterval(1000);
-
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        android.location.Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
-        if (mLastLocation != null) {
-            //place marker at current position
-            //mGoogleMap.clear();
-            latitude=mLastLocation.getLatitude();
-            longitude= mLastLocation.getLongitude();
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(new LatLng(latitude,longitude));
-            markerOptions.title("Current Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-            map.addMarker(markerOptions);
-            userLocation=new LatLng(latitude,longitude);
-
-
-            Toast.makeText(this, latitude+""+longitude+"", Toast.LENGTH_SHORT).show();
-        }
-
-
-
-
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
-
-        {
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, (com.google.android.gms.location.LocationListener) this);
-
-        }
-    }
-    public boolean checkLocationPermission()
-
-    {
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-
-        {
-
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION))
-
-            {
-
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
-
-            } else
-
-            {
-
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
-
-            }
-
-            return false;
-
-
-        } else
-
-            return true;
-
-    }
-    public static final int REQUEST_LOCATION_CODE = 99;
-    @Override
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode)
-
-        {
-
-            case REQUEST_LOCATION_CODE:
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-
-                {
-
-                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-
-                    {
-
-                        if (client == null)
-
-                        {
-
-                            bulidGoogleApiClient();
-
-                        }
-
-                        map.setMyLocationEnabled(true);
-
-                    }
-
-                } else
-
-                {
-
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
-
-                }
-
-        }
-
-    }
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-    public android.location.Location getLocation(){
-        android.location.Location location=null;
-        try{
-
-            locationManager = (LocationManager) getApplication().getSystemService(LOCATION_SERVICE);
-            isGPSEnabled = locationManager.isProviderEnabled(locationManager.GPS_PROVIDER);
-            isNetworkEnabled=locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER);
-
-            if(ContextCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
-
-                if(isGPSEnabled){
-                    if(location==null){
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000,10, (LocationListener) this);
-                        if(locationManager!=null){
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
-                    }
-                }
-                // if lcoation is not found from GPS than it will found from network //
-                if(location==null){
-                    if(isNetworkEnabled){
-
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000,10,this);
-                        if(locationManager!=null){
-                            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        }
-
-                    }
-                }
-
-            }
-
-        }catch(Exception ex){
-
-        }
-        return  location;
-    }
     ArrayList<Polyline> polyline=new ArrayList<>();
     private String  getMapsApiDirectionsUrl(LatLng origin,LatLng dest) {
         // Origin of route
@@ -474,6 +226,7 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
 
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+        Log.d("haha", url);
         return url;
 
     }
