@@ -1,12 +1,14 @@
 package com.example.vukhachoi.demo_foody;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -52,6 +54,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+
 import Adapter.MyDatabaseAdapter;
 import Model.Restaurant;
 
@@ -59,7 +63,10 @@ public class Restaurant_Details extends AppCompatActivity implements OnMapReadyC
     public static GoogleMap map;
     Toolbar toolbar1,toolbar2;
 
+    String name,address;
+    byte[] image;
     LatLng latLng;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,34 +83,48 @@ public class Restaurant_Details extends AppCompatActivity implements OnMapReadyC
         ActivityCompat.requestPermissions(Restaurant_Details.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
     }
 
-    String name,address;
     void AddData()
     {
         Intent intent=getIntent();
 
-        MyDatabaseAdapter myDatabase;
-        SQLiteDatabase database;
-        myDatabase= new MyDatabaseAdapter(this);
-        myDatabase.Khoitai();
-        database=myDatabase.getMyDatabase();
+        SQLiteDatabase database = MyDatabaseAdapter.initDatabase(Restaurant_Details.this, "db_foody.sqlite");
 
-       Restaurant restaurant = (Restaurant) intent.getSerializableExtra("ChooseLocation");
+        Restaurant restaurant = (Restaurant) intent.getSerializableExtra("ChooseLocation");
 
 
-
-         name=restaurant.getTitle();
+        name=restaurant.getTitle();
         String restype="Drink|Food";
-         address=restaurant.getAddress();
+        address=restaurant.getAddress();
         String description="Đây là một nhà hàng nổi tiếng với những món ăn ngon , rẻ. Được mọi người đánh giá cao về chất lượng";
         latLng=new LatLng(restaurant.getLati(),restaurant.getLongti());
         float posi=4;
-        String Image=restaurant.getImage1();
+
+        String imageString=restaurant.getImageString();
         //new Restaurant(name,address,restype,hinhanh);
         ImageView imageView=findViewById(R.id.image_res);
-        Picasso.with(Restaurant_Details.this)
-                .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+Image+"&key=AIzaSyABLune_lERG5qC-CmY4wlY0nM5RuCJ4vs")
-                .error(R.drawable.add)
-                .into(imageView);
+        if(imageString!=null) {
+            Picasso.with(Restaurant_Details.this)
+                    .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + imageString + "&key=AIzaSyABLune_lERG5qC-CmY4wlY0nM5RuCJ4vs")
+                    .error(R.drawable.add)
+                    .placeholder(R.drawable.add)
+                    .into(imageView);
+        }
+        else
+        {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(restaurant.getImage(), 0, restaurant.getImage().length);
+            imageView.setImageBitmap(bitmap);
+
+        }
+
+        //convert to byte[]
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, byteArrayOutputStream);
+        image = byteArrayOutputStream.toByteArray();
+
+//        image = imageString.getBytes();
+
 
 
         TextView txtname=findViewById(R.id.txtTitle_detail);
@@ -139,13 +160,44 @@ public class Restaurant_Details extends AppCompatActivity implements OnMapReadyC
         toolbar2=findViewById(R.id.tool_fav);
         toolbar2.inflateMenu(R.menu.favourites_details);
 
+        //save to database
         toolbar2.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(Restaurant_Details.this,"fav",Toast.LENGTH_LONG).show();
+
+                //check exists
+                boolean check = true;
+                SQLiteDatabase database = MyDatabaseAdapter.initDatabase(Restaurant_Details.this , "db_foody.sqlite");
+                Cursor cursor = database.rawQuery("SELECT * FROM Restaurant", null);
+
+                while(cursor.moveToNext()){
+
+                    if(cursor.getString(4).equals(latLng.latitude+"") && cursor.getString(5).equals(latLng.longitude+"")) {
+                        Toast.makeText(Restaurant_Details.this, "Unsuccessful. This address already exists!", Toast.LENGTH_SHORT).show();
+                        check = false;
+                        break;
+                    }
+                }
+
+                //insert vào database
+                if(check == true){
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("title", name); //keyName = database
+                    contentValues.put("img", image);
+                    contentValues.put("address", address);
+                    contentValues.put("Lati", latLng.latitude+"");
+                    contentValues.put("Longti", latLng.longitude+"");
+
+                    database.insert("Restaurant",null, contentValues);
+                    Toast.makeText(Restaurant_Details.this,"Successfully added!",Toast.LENGTH_SHORT).show();
+                }
+
+
                 return true;
             }
         });
+
+
         Button button=findViewById(R.id.btnRoute);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,13 +205,18 @@ public class Restaurant_Details extends AppCompatActivity implements OnMapReadyC
                 Intent intent=new Intent(Restaurant_Details.this,Show_Routes.class);
                 intent.putExtra("title",name);
                 intent.putExtra("address",address);
+                intent.putExtra("img",image);
+
                 intent.putExtra("lati",latLng.latitude);
                 intent.putExtra("longti",latLng.longitude);
+
                 startActivity(intent);
             }
         });
-
     }
+
+
+
 
     private void createMap() {
         SupportMapFragment smf = (SupportMapFragment) getSupportFragmentManager()

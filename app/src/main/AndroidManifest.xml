@@ -20,6 +20,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,8 +28,8 @@
         <activity android:name=".location_chooser" />
         <activity android:name=".Show_Routes" />
         <activity android:name=".Restaurant_Details" />
-        <activity android:name=".manage_restaurant"></activity>
-
+        <activity android:name=".manage_restaurant" />
+        <activity android:name=".SaveDatabaseActivity"></activity>
     </application>
 
 </manifest>

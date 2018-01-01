@@ -6,6 +6,7 @@
     android:background="@drawable/custom_toolbar_details"
     android:layout_height="match_parent"
     tools:context="com.example.vukhachoi.demo_foody.browser_restaurant">
+
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
@@ -19,7 +20,8 @@
             android:id="@+id/tool_back1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"></android.support.v7.widget.Toolbar>
+            android:layout_alignParentRight="true">
+        </android.support.v7.widget.Toolbar>
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,11 +31,6 @@
             android:layout_centerInParent="true"
             android:text="Browser Restaurant" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_fav1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"></android.support.v7.widget.Toolbar>
 
     </RelativeLayout>
 
@@ -69,42 +66,43 @@
 
             android:orientation="vertical"
             app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
-          <LinearLayout
-              android:background="@drawable/custom_toolbar_details"
-              android:layout_width="match_parent"
-              android:orientation="vertical"
-              android:layout_height="wrap_content">
-          <LinearLayout
-              android:layout_width="wrap_content"
-              android:orientation="horizontal"
-              android:layout_gravity="center"
+            <LinearLayout
+                android:background="@drawable/custom_toolbar_details"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
 
-              android:layout_height="wrap_content">
+                    android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:text="Danh sách nhà hàng"
-            android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingLeft="5dp"
+                        android:text="Restaurant List"
+                        android:textSize="15sp" />
 
-              <Spinner
+                    <Spinner
+                        android:id="@+id/spn"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"></Spinner>
+                </LinearLayout>
+            </LinearLayout>
 
-
-                  android:id="@+id/spn"
-android:layout_gravity="center"
-android:layout_marginLeft="20dp"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"></Spinner>
-          </LinearLayout>
-          </LinearLayout>
             <ListView
-        android:layout_width="wrap_content"
-        android:id="@+id/listview"
-        android:layout_height="wrap_content"
-       ></ListView>
+                android:layout_width="wrap_content"
+                android:id="@+id/listview"
+                android:layout_height="wrap_content">
+            </ListView>
+
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>
+

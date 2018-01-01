@@ -13,13 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
        android:orientation="vertical">
+
         <RelativeLayout
             android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
 
             android:layout_height="@dimen/cast_expanded_controller_control_toolbar_min_height"
-            android:background="@drawable/custom_toolbar_details"
-            >
+            android:background="@drawable/custom_toolbar_details">
 
             <android.support.v7.widget.Toolbar
 
@@ -43,6 +43,7 @@
                 android:layout_alignParentRight="true"></android.support.v7.widget.Toolbar>
 
         </RelativeLayout>
+
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
@@ -54,8 +55,8 @@
                 android:id="@+id/myMap"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></fragment>
-
+                android:layout_height="match_parent">
+            </fragment>
 
         </FrameLayout>
 

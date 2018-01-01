@@ -60,7 +60,7 @@ import Adapter.MyDatabaseAdapter;
 import Model.Restaurant;
 
 public class browser_restaurant extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    Toolbar toolbar1,toolbar2;
+    Toolbar toolbar1;
     ListView listView;
     int Posi;
     private GoogleApiClient client;
@@ -88,7 +88,9 @@ public class browser_restaurant extends AppCompatActivity implements OnMapReadyC
     private BottomSheetBehavior mBottomSheetBehavior;
     View bottomSheet ;
     private  int REQUESTCODE=123;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,13 +104,9 @@ public class browser_restaurant extends AppCompatActivity implements OnMapReadyC
         mapFragment.getMapAsync(this);
         spinner=findViewById(R.id.spn);
         listView = findViewById(R.id.listview);
-        arrayList = new ArrayList<>();
 
-        arrayAdapter = new AdapterLocation(this, R.layout.item_restaurant, arrayList);
-
-        listView.setAdapter(arrayAdapter);
         AddControl();
-AddEvent();
+        AddEvent();
 
     }
 
@@ -120,12 +118,20 @@ AddEvent();
     protected void onStart() {
         super.onStart();
 
+        arrayList = new ArrayList<>();
 
+        arrayAdapter = new AdapterLocation(this, R.layout.item_restaurant, arrayList);
+
+        listView.setAdapter(arrayAdapter);
 
 
 
         if (client!= null && !client.isConnected())
             client.connect();
+
+     try{  UpdateRes();}
+     catch (Exception e){}
+
     }
 
     public void restaurent(View view) {
@@ -221,6 +227,7 @@ AddEvent();
                 }
 
             }
+
             latitude=location.getLatitude();
             longitude=location.getLongitude();
         }catch(Exception ex){
@@ -349,7 +356,7 @@ int a=0;
 
         googlePlaceUrl.append("&sensor=true");
 
-        googlePlaceUrl.append("&key=" + "AIzaSyABLune_lERG5qC-CmY4wlY0nM5RuCJ4vs");
+        googlePlaceUrl.append("&key=" + "AIzaSyBr_-JkzA1oqrjcpJ17BYe_GD5Li7h59TA");
 
 
         Log.d("MapsActivity", "url = " + googlePlaceUrl.toString());
@@ -360,30 +367,7 @@ int a=0;
     }
 
 
-//    void AddData()
-//    {
-//
-//        MyDatabaseAdapter myDatabase;
-//        SQLiteDatabase database;
-//        myDatabase= new MyDatabaseAdapter(this);
-//        myDatabase.Khoitai();
-//        database=myDatabase.getMyDatabase();
-//
-//        Cursor cursor = database.rawQuery("select * from Restaurant", null);
-//        cursor.moveToFirst();
-//        while (!cursor.isAfterLast())
-//        {
-//            String name=cursor.getString(1);
-//            String restype=cursor.getString(7);
-//            String address=cursor.getString(4);
-//            byte[] hinhanh = cursor.getBlob(3);
-//            arrayList.add(new Restaurant(name,address,restype,hinhanh));
-//            cursor.moveToNext();
-//        }
-//        cursor.close();
-//
-//
-//    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void AddControl() {
         bottomSheet = findViewById( R.id.bottom_sheet );
@@ -409,24 +393,19 @@ int a=0;
             window.setStatusBarColor(getResources().getColor(R.color.my_color));
 //       getSupportActionBar().hide();
         }
+
         toolbar1 = findViewById(R.id.tool_back1);
-        toolbar1.setNavigationIcon(R.drawable.navi);
+//        toolbar1.setNavigationIcon(R.drawable.navi);
+        toolbar1.inflateMenu(R.menu.list);
+
+        //kích vào menu bên góc trái->hiện mh listview chứa ds nhà hàng saveData
         toolbar1.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                finish();
-                return true;
-            }
-        });
-        toolbar2=findViewById(R.id.tool_fav1);
-        toolbar2.inflateMenu(R.menu.search);
 
-        toolbar2.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-//                Toast.makeText(Restaurant_Details.this,"fav",Toast.LENGTH_LONG).show();
-                Intent intent=new Intent(browser_restaurant.this,location_chooser.class);
+                Intent intent=new Intent(browser_restaurant.this, SaveDatabaseActivity.class);
                 startActivityForResult(intent,REQUESTCODE);
+
                 return true;
             }
         });
@@ -440,7 +419,7 @@ int a=0;
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent=new Intent(browser_restaurant.this,Restaurant_Details.class);
                 intent.putExtra("ChooseLocation",arrayList.get(i));
-                Toast.makeText(browser_restaurant.this,arrayList.get(i).getAddress()+arrayList.get(i).getTitle()+arrayList.get(i).getLati()+arrayList.get(i).getLongti()+"" , Toast.LENGTH_SHORT).show();
+                Toast.makeText(browser_restaurant.this,arrayList.get(i).getTitle()+"\n"+arrayList.get(i).getAddress(), Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             }
         });
@@ -574,7 +553,8 @@ int a=0;
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
             map.addMarker(markerOptions);
             userLocation=new LatLng(latitude,longitude);
-            Toast.makeText(this, latitude+""+longitude+"", Toast.LENGTH_SHORT).show();
+
+//            Toast.makeText(this, latitude+""+longitude+"", Toast.LENGTH_SHORT).show();
         }
 
 

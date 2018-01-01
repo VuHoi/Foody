@@ -62,11 +62,7 @@ public class manage_restaurant extends AppCompatActivity {
         listView=findViewById(R.id.listviewmanage1);
         arrayList=new ArrayList<>();
 
-        MyDatabaseAdapter myDatabase;
-        SQLiteDatabase database;
-        myDatabase= new MyDatabaseAdapter(this);
-        myDatabase.Khoitai();
-        database=myDatabase.getMyDatabase();
+        SQLiteDatabase database = MyDatabaseAdapter.initDatabase(manage_restaurant.this, "db_foody.sqlite");
 
         Cursor cursor = database.rawQuery("select * from Restaurant", null);
         cursor.moveToFirst();
