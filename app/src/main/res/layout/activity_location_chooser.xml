@@ -42,76 +42,71 @@
         android:layout_below="@id/containers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
+        android:layout_marginLeft="10sp"
         android:id="@+id/txtcity"
         android:textColor="#938e8e"
         android:textSize="18dp"
-        android:text="Your City"/>
+        android:text="Address"/>
+
     <EditText
+        android:id="@+id/edtcity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtcity"
-        android:paddingLeft="20dp"
-        android:singleLine="true"
-
         android:background="@drawable/edt_custom"
-        android:textColor="#292727"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
+
+        android:layout_marginLeft="10sp"
+        android:hint="Moskva"
         android:paddingBottom="5dp"
-        android:textColorHint="@color/colorPrimary"
-        android:text="Hồ chí minh"
-        android:id="@+id/edtcity"
-        android:paddingRight="20dp"/>
+        android:paddingEnd="5dp"
+        android:paddingRight="20dp"
+        android:paddingTop="5dp"
+        android:singleLine="true"
+        android:textColor="#292727"
+        android:textColorHint="@color/colorPrimary" />
     <TextView
         android:paddingTop="10dp"
         android:layout_below="@id/edtcity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
+        android:layout_marginLeft="10dp"
         android:textColor="#938e8e"
         android:id="@+id/txtyoudress"
         android:textSize="18dp"
-        android:text="Tên nhà hàng"/>
-    <EditText
+        android:text="Restaurant"/>
+
+    <Spinner
+        android:id="@+id/spinnerNameResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/txtyoudress"
-        android:paddingLeft="20dp"
-        android:background="@drawable/edt_custom"
-        android:textColor="#292727"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp"
-
-        android:singleLine="true"
-        android:text=""
-        android:hint="ABC"
-        android:textColorHint="#81000000"
-        android:id="@+id/edtyoudress"
-        android:paddingRight="20dp"/>
+        android:spinnerMode="dialog" />
 
     <Button
+        android:id="@+id/btnChooseRestaurant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="CURRENT lOCATION"
-        android:textStyle="bold"
+        android:layout_above="@+id/btnShow"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
         android:background="#ffffff"
+        android:drawableTop="@drawable/user"
+        android:text="CHOOSE lOCATION"
         android:textColor="#292727"
-        android:layout_marginTop="30dp"
-        android:layout_below="@id/edtyoudress"
-        android:drawableTop="@drawable/user"/>
+        android:textStyle="bold" />
+
     <Button
+        android:id="@+id/btnShow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="5dp"
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp"
-        android:id="@+id/btnShow"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="9dp"
         android:background="@drawable/background_show_restaurant"
-        android:text="Show Restaurants"/>
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Show Restaurant Map" />
 
 </RelativeLayout>

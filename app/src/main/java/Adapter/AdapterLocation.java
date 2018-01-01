@@ -32,6 +32,7 @@ public class AdapterLocation extends ArrayAdapter<Restaurant> {
         this.resource=resource;
         this.objects=objects;
     }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -50,7 +51,7 @@ public class AdapterLocation extends ArrayAdapter<Restaurant> {
 
 //        Picasso.with(getContext()).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photoreference="+hoa.getPhoto_ref()+"&key=AIzaSyAafUK3_rCTM6esCaZKIj7DNTu8ZkQ6QCw").into(imageView);
         Picasso.with(context)
-                .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+restaurant.getImage1()+"&key=AIzaSyABLune_lERG5qC-CmY4wlY0nM5RuCJ4vs")
+                .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+restaurant.getImageString()+"&key=AIzaSyABLune_lERG5qC-CmY4wlY0nM5RuCJ4vs")
                 .error(R.drawable.add)
                 .into(imageView);
         return row;

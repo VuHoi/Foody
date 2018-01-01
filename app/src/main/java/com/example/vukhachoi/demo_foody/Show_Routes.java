@@ -1,8 +1,11 @@
 package com.example.vukhachoi.demo_foody;
 
 import android.*;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -52,12 +55,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import Adapter.MyDatabaseAdapter;
 
 
 public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback{
 
     public static GoogleMap map;
 
+
+    String name;
+    String address;
+    byte[] image;
+    double lati;
+    double longti;
 
     double latitude = 0, longitude = 0;
     public static LatLng userLocation;
@@ -89,10 +99,39 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
         toolbar2=findViewById(R.id.tool_fav);
         toolbar2.inflateMenu(R.menu.favourites_details);
 
+        //save to database
         toolbar2.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(Show_Routes.this,"fav",Toast.LENGTH_LONG).show();
+
+                //check exists
+                boolean check = true;
+                SQLiteDatabase database = MyDatabaseAdapter.initDatabase(Show_Routes.this , "db_foody.sqlite");
+                Cursor cursor = database.rawQuery("SELECT * FROM Restaurant", null);
+
+                while(cursor.moveToNext()){
+
+                    if(cursor.getString(4).equals(lati+"") && cursor.getString(5).equals(longti+"")) {
+                        Toast.makeText(Show_Routes.this, "Unsuccessful. This address already exists!", Toast.LENGTH_SHORT).show();
+                        check = false;
+                        break;
+                    }
+                }
+
+
+                //insert to database
+                if(check == true){
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("title", name); //keyName = database
+                    contentValues.put("img", image);
+                    contentValues.put("address", address);
+                    contentValues.put("Lati", lati+"");
+                    contentValues.put("Longti", longti+"");
+
+                    database.insert("Restaurant",null, contentValues);
+                    Toast.makeText(Show_Routes.this,"Successfully added!",Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
             }
         });
@@ -110,6 +149,7 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
         super.onResume();
         createMap();
     }
+
     LatLng latLng;
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -128,15 +168,22 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
             userLocation = new LatLng(browser_restaurant.latitude, browser_restaurant.longitude);
 
 
-            String name=getIntent().getStringExtra("title");
-            String address=getIntent().getStringExtra("address");
-            double lati=getIntent().getDoubleExtra("lati",0);
-            double longti=getIntent().getDoubleExtra("longti",0);
-            latLng=new LatLng(lati,longti);
+            //get Intent
+            Intent intent = getIntent();
+            name = intent.getStringExtra("title");
+            address = intent.getStringExtra("address");
+            image = intent.getByteArrayExtra("img");
+            lati = intent.getDoubleExtra("lati",0);
+            longti = intent.getDoubleExtra("longti",0);
+
+
+
+            latLng = new LatLng(lati,longti);
             map.addMarker(new MarkerOptions()
                     .title(name)
                     .snippet(address)
                     .position(latLng));
+
 
 
 
@@ -183,9 +230,8 @@ public class Show_Routes extends AppCompatActivity implements OnMapReadyCallback
 
             });
 
-            Toast.makeText(this, name + address+lati+longti, Toast.LENGTH_SHORT).show();
-//        }catch (Exception e){}
-        //Add direction
+
+            Toast.makeText(this, "Address: " + address, Toast.LENGTH_SHORT).show();
 
     }
 
